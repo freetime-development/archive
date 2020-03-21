@@ -1,0 +1,24 @@
+{
+    "name": "Archive",
+    "version": "1.0",
+    "description": "Best extension ever",
+    "permissions": ["tabs", "contextMenus", "activeTab"],
+    "manifest_version": 2,
+    "default_locale": "en",
+    "background": {
+      "scripts": ["background.js"]
+    },
+    "content_scripts": [
+      {
+        "matches": [
+          "<all_urls>"
+        ],
+        "js": ["content.js"]
+      }
+    ],
+    "browser_action": {
+      "default_title": "__MSG_default_title__",
+      "default_popup": "archive.html"
+    }
+  }
+  
