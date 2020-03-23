@@ -7,18 +7,14 @@ import { initPopup } from '../actions/actions'
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps
 
 class App extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props)
-  }
-
-  componentDidMount() {
+  componentDidMount () {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const url = new URL(tabs[0].url)
       this.props.initPopup(url)
-    });
+    })
   }
 
-  render() {
+  render () {
     const embed = this.props.embed ? React.createElement(this.props.embed.type, this.props.embed.props) : null
     return (
       <>

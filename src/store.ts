@@ -1,5 +1,5 @@
-import { wrapStore } from 'webext-redux';
-import thunkMiddleware from 'redux-thunk';
+import { wrapStore } from 'webext-redux'
+import thunkMiddleware from 'redux-thunk'
 import { createStore, applyMiddleware } from 'redux'
 import { composeWithDevTools } from 'remote-redux-devtools'
 
@@ -18,4 +18,3 @@ export function initializeStore() {
 
   return store
 }
-
