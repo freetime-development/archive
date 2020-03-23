@@ -1,8 +1,8 @@
-import { domain } from "../conf";
+import { domain } from '../conf'
 
 export enum VideoTypeKeys {
-  EMBED_VIDEO = "EMBED_VIDEO"
-} 
+  EMBED_VIDEO = 'EMBED_VIDEO'
+}
 
 export interface VideoData {
   url: URL
@@ -19,7 +19,7 @@ export interface EmbedVideoAction {
   type: VideoTypeKeys.EMBED_VIDEO
   payload: any
 }
-  
+
 export const embedVideo = (payload: any): EmbedVideoAction => ({
   type: VideoTypeKeys.EMBED_VIDEO,
   payload
@@ -31,16 +31,16 @@ export const embedVideo = (payload: any): EmbedVideoAction => ({
 
 const saveVideo = (data: VideoData) => (dispatch) => {
   fetch(`${domain}/api/set`, {
-    method: "POST",
+    method: 'POST',
     headers: {
       'Content-type': 'application/json'
     },
     body: JSON.stringify(data)
   })
-  .then(function(response) {
-    const res = response.json()
-  })
-  .catch(function(err) {
-    console.log(`Error: ${err}` )
-  });
+    .then(function (response) {
+      const res = response.json()
+    })
+    .catch(function (err) {
+      console.log(`Error: ${err}`)
+    })
 }
