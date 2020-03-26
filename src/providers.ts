@@ -8,8 +8,8 @@ providers.set(Providers.YT, function getYoutubeIFrame(embedUrl) {
   return {
     type: 'iframe',
     props: {
-      width: 560,
-      height: 315,
+      width: 360,
+      height: 200,
       src: embedUrl,
       frameBorder: 0,
       allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',

@@ -1,15 +1,15 @@
 import { CombinedActions } from '../actions/actions'
 import { VideoTypeKeys } from '../actions/videoActions'
 import { TextTypeKeys } from '../actions/textActions'
+import { NodeTypeKeys } from '../actions/nodeActions'
+import { Node } from '../interface'
 
 export interface RootState {
-  embed: any
-  textSelection: string
+  nodes: Node[]
 }
 
 const initialState: RootState = {
-  embed: null,
-  textSelection: ''
+  nodes: []
 }
 
 export default function rootReducer (
@@ -17,15 +17,38 @@ export default function rootReducer (
   action: CombinedActions
 ): RootState {
   switch (action.type) {
+    case NodeTypeKeys.CREATE_NODE:
+      return {
+        ...state,
+        nodes: [...state.nodes, action.payload]
+      }
     case VideoTypeKeys.EMBED_VIDEO:
       return {
         ...state,
-        embed: action.payload
+        nodes: state.nodes.map((node) => {
+          if (node.id === action.payload.id) {
+            return {
+              ...node,
+              embed: action.payload.data
+            }
+          } else {
+            return node
+          }
+        })
       }
     case TextTypeKeys.SAVE_TEXT:
       return {
         ...state,
-        textSelection: action.payload
+        nodes: state.nodes.map((node) => {
+          if (node.id === action.payload.id) {
+            return {
+              ...node,
+              text: action.payload.data
+            }
+          } else {
+            return node
+          }
+        })
       }
     default:
       return state
