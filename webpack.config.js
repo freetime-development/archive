@@ -38,7 +38,8 @@ module.exports = {
       filename: 'archive.html'
     }),
     new CopyPlugin([
-      { from: 'src/extension_specifics' }
+      { from: 'src/extension_specifics' },
+      { from: 'assets' }
     ])
   ],
   devServer: {

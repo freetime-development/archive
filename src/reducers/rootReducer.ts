@@ -1,6 +1,4 @@
 import { CombinedActions } from '../actions/actions'
-import { VideoTypeKeys } from '../actions/videoActions'
-import { TextTypeKeys } from '../actions/textActions'
 import { NodeTypeKeys } from '../actions/nodeActions'
 import { Node } from '../interface'
 
@@ -22,33 +20,38 @@ export default function rootReducer (
         ...state,
         nodes: [...state.nodes, action.payload]
       }
-    case VideoTypeKeys.EMBED_VIDEO:
+    case NodeTypeKeys.SAVE_NODE_SUCCESS:
       return {
         ...state,
         nodes: state.nodes.map((node) => {
           if (node.id === action.payload.id) {
             return {
               ...node,
-              embed: action.payload.data
+              saved: true
             }
           } else {
             return node
           }
         })
       }
-    case TextTypeKeys.SAVE_TEXT:
+    case NodeTypeKeys.SAVE_NODE_ERROR:
       return {
         ...state,
         nodes: state.nodes.map((node) => {
           if (node.id === action.payload.id) {
             return {
               ...node,
-              text: action.payload.data
+              error: true
             }
           } else {
             return node
           }
         })
+      }
+    case NodeTypeKeys.DISCARD_NODE:
+      return {
+        ...state,
+        nodes: state.nodes.filter((node) => node.id !== action.nodeId)
       }
     default:
       return state

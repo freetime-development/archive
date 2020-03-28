@@ -4,36 +4,34 @@ import './node.css'
 
 interface Props {
   data: INode
+  onSave(node: INode)
+  onDiscard(nodeId: string)
 }
 
 class Node extends PureComponent<Props> {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      hasError: false
-    }
-  }
-
   render () {
-    let { logo, embed, meta, text } = this.props.data
+    let { embed, nodeData, favIconUrl } = this.props.data
     embed = embed ? React.createElement(embed.type, embed.props) : null
     return (
       <div className="content-node">
         <div className="content-node-left">
-          <p>
-            source: {meta.origin}
-            {logo &&
-              <img src={logo} height="48px" width="48px" />
-            }
-          </p>
-          <div className="description-container">
-            <textarea autoFocus placeholder="description..." rows={4} cols={40}></textarea>
-          </div>
-          <button>Save</button>
+          {embed || nodeData.text}
         </div>
         <div className="content-node-right">
-          {embed || text}
+          <div className="title">
+            <h3>{nodeData.title}</h3>
+          </div>
+          <div className="source">
+            <img src={favIconUrl} />
+            {nodeData.url}
+          </div>
+          <div className="description-container">
+            <textarea autoFocus placeholder="Something you would like to add?" rows={4}></textarea>
+          </div>
+          <div className="btn-group">
+            <button className="btn btn-save" onClick={() => this.props.onSave(this.props.data)}>Save</button>
+            <button className="btn btn-discard" onClick={() => this.props.onDiscard(this.props.data.id)}>Discard</button>
+          </div>
         </div>
       </div>
     )

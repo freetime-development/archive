@@ -34,35 +34,47 @@ function onClickContextMenu(info, tab) {
   const url = new URL(tab.url)
 
   chrome.tabs.sendMessage(tab.id, { msg: 'open_extension', tab })
-  store.dispatch(initPopup(url, { text: info.selectionText }))
+  store.dispatch(initPopup(url, { nodeData: { text: info.selectionText } }, tab))
 }
 
 function onClickBrowserIcon(tab) {
   const url = new URL(tab.url)
 
-  const nodeData = createNodeData(url)
-  chrome.tabs.sendMessage(tab.id, { msg: 'open_extension', nodeData })
-  if (nodeData) {
-    store.dispatch(initPopup(url, nodeData))
+  const providerSpecificData = createNodeData(url)
+  chrome.tabs.sendMessage(tab.id, { msg: 'open_extension', providerSpecificData: providerSpecificData || 'no_data' })
+  if (providerSpecificData) {
+    store.dispatch(initPopup(url, providerSpecificData, tab))
   }
 }
 
 function createNodeData(url) {
   const node = {
-    meta: {}
+    nodeData: {}
   }
   switch (url.origin) {
     case Providers.YT: {
       const videoId = url.searchParams.get('v')
-      if (store.getState().nodes.find((node) => node.meta.videoId === videoId)) {
+      if (store.getState().nodes.find((node) => node.nodeData.videoId === videoId)) {
         return null
       }
       const embedUrl = `${url.origin}/embed/${videoId}`
       const embedElement = providers.get(Providers.YT)(embedUrl)
 
-      node.meta.videoId = videoId
-      node.meta.embedUrl = embedUrl
+      node.nodeData.videoId = videoId
+      node.nodeData.embedUrl = embedUrl
       node.embed = embedElement
+      return node
+    }
+    case Providers.IMGUR: {
+      const postId = window.location.pathname.split('/')[2]
+      if (store.getState().nodes.find((node) => node.nodeData.postId === postId)) {
+        return null
+      }
+      const embedElement = providers.get(Providers.IMGUR)(postId)
+
+      node.nodeData.postId = postId
+      node.embed = embedElement
+
       return node
     }
     default:
