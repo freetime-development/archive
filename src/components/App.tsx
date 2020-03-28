@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { RootState } from '../reducers/rootReducer'
-import { initPopup } from '../actions/actions'
 import Node from './Node/Node'
 import { saveNode, discardNode } from '../actions/nodeActions'
 
@@ -15,7 +14,7 @@ class App extends React.Component<Props> {
         <button className="btn btn-close icon icon-cross" onClick={this.closeExtension}></button>
         <div className="nodes">
           {this.props.nodes.map((node) =>
-            <Node key={node.id} data={node} onSave={saveNode} onDiscard={discardNode} />
+            <Node key={node.id} data={node} onSave={this.props.saveNode} onDiscard={this.props.discardNode} />
           )}
         </div>
       </>
@@ -36,7 +35,6 @@ const mapStateToProps = (
 })
 
 const mapDispatchToProps = {
-  initPopup,
   saveNode,
   discardNode
 }
