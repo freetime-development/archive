@@ -2,39 +2,48 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { RootState } from '../reducers/rootReducer'
-import { initPopup } from '../actions/actions'
+import Node from './Node/Node'
+import { saveNode, discardNode, annotateNode } from '../actions/nodeActions'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps
 
 class App extends React.Component<Props> {
-  componentDidMount () {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const url = new URL(tabs[0].url)
-      this.props.initPopup(url)
-    })
-  }
-
   render () {
-    const embed = this.props.embed ? React.createElement(this.props.embed.type, this.props.embed.props) : null
     return (
       <>
-        {embed}
-        <div className="description-container">
-          <textarea autoFocus placeholder="description..." rows={4} cols={40}></textarea>
+        <button className="btn btn-close icon icon-cross" onClick={this.closeExtension}></button>
+        <div className="nodes">
+          {this.props.nodes.map((node) =>
+            <Node
+              key={node.id}
+              data={node}
+              onSave={this.props.saveNode}
+              onDiscard={this.props.discardNode}
+              onAnnotate={this.props.annotateNode}
+            />
+          )}
         </div>
       </>
     )
+  }
+
+  closeExtension = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, { msg: 'close_extension' })
+    })
   }
 }
 
 const mapStateToProps = (
   state: RootState
 ) => ({
-  embed: state.embed
+  nodes: state.nodes
 })
 
 const mapDispatchToProps = {
-  initPopup
+  saveNode,
+  discardNode,
+  annotateNode
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

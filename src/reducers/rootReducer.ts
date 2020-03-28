@@ -1,15 +1,13 @@
 import { CombinedActions } from '../actions/actions'
-import { VideoTypeKeys } from '../actions/videoActions'
-import { TextTypeKeys } from '../actions/textActions'
+import { NodeTypeKeys } from '../actions/nodeActions'
+import { Node } from '../interface'
 
 export interface RootState {
-  embed: any
-  textSelection: string
+  nodes: Node[]
 }
 
 const initialState: RootState = {
-  embed: null,
-  textSelection: ''
+  nodes: []
 }
 
 export default function rootReducer (
@@ -17,15 +15,60 @@ export default function rootReducer (
   action: CombinedActions
 ): RootState {
   switch (action.type) {
-    case VideoTypeKeys.EMBED_VIDEO:
+    case NodeTypeKeys.CREATE_NODE:
       return {
         ...state,
-        embed: action.payload
+        nodes: [...state.nodes, action.payload]
       }
-    case TextTypeKeys.SAVE_TEXT:
+    case NodeTypeKeys.SAVE_NODE_SUCCESS:
       return {
         ...state,
-        textSelection: action.payload
+        nodes: state.nodes.map((node) => {
+          if (node.id === action.nodeId) {
+            return {
+              ...node,
+              saved: true
+            }
+          } else {
+            return node
+          }
+        })
+      }
+    case NodeTypeKeys.SAVE_NODE_ERROR:
+      return {
+        ...state,
+        nodes: state.nodes.map((node) => {
+          if (node.id === action.nodeId) {
+            return {
+              ...node,
+              error: true
+            }
+          } else {
+            return node
+          }
+        })
+      }
+    case NodeTypeKeys.DISCARD_NODE:
+      return {
+        ...state,
+        nodes: state.nodes.filter((node) => node.id !== action.nodeId)
+      }
+    case NodeTypeKeys.ANNOTATE_NODE:
+      return {
+        ...state,
+        nodes: state.nodes.map((node) => {
+          if (node.id === action.payload.nodeId) {
+            return {
+              ...node,
+              nodeData: {
+                ...node.nodeData,
+                annotation: action.payload.data
+              }
+            }
+          } else {
+            return node
+          }
+        })
       }
     default:
       return state

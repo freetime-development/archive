@@ -17,8 +17,10 @@
       }
     ],
     "browser_action": {
-      "default_title": "__MSG_default_title__",
-      "default_popup": "archive.html"
-    }
+      "default_title": "__MSG_default_title__"
+    },
+    "web_accessible_resources": [
+      "archive.html"
+    ]
   }
   

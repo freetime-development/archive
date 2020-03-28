@@ -1,8 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CheckerPlugin } = require('awesome-typescript-loader')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
-const CopyPlugin = require('copy-webpack-plugin');
-
+const CopyPlugin = require('copy-webpack-plugin')
 module.exports = {
   mode: 'development',
   entry: {
@@ -19,6 +18,10 @@ module.exports = {
         test: /\.(j|t)sx?$/,
         exclude: /node_modules/,
         use: { loader: 'awesome-typescript-loader' }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
@@ -35,8 +38,9 @@ module.exports = {
       filename: 'archive.html'
     }),
     new CopyPlugin([
-      { from: 'src/extension_specifics' }
-    ]),
+      { from: 'src/extension_specifics' },
+      { from: 'assets' }
+    ])
   ],
   devServer: {
     stats: 'errors-only',
@@ -48,6 +52,6 @@ module.exports = {
     hot: false,
     // Use host 0.0.0.0 for Docker
     host: process.env.HOST, // Defaults to `localhost`
-    port: process.env.PORT, // Defaults to 8080
-  },
-};
+    port: process.env.PORT // Defaults to 8080
+  }
+}
