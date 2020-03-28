@@ -24,7 +24,7 @@ export default function rootReducer (
       return {
         ...state,
         nodes: state.nodes.map((node) => {
-          if (node.id === action.payload.id) {
+          if (node.id === action.nodeId) {
             return {
               ...node,
               saved: true
@@ -38,7 +38,7 @@ export default function rootReducer (
       return {
         ...state,
         nodes: state.nodes.map((node) => {
-          if (node.id === action.payload.id) {
+          if (node.id === action.nodeId) {
             return {
               ...node,
               error: true
@@ -52,6 +52,23 @@ export default function rootReducer (
       return {
         ...state,
         nodes: state.nodes.filter((node) => node.id !== action.nodeId)
+      }
+    case NodeTypeKeys.ANNOTATE_NODE:
+      return {
+        ...state,
+        nodes: state.nodes.map((node) => {
+          if (node.id === action.payload.nodeId) {
+            return {
+              ...node,
+              nodeData: {
+                ...node.nodeData,
+                annotation: action.payload.data
+              }
+            }
+          } else {
+            return node
+          }
+        })
       }
     default:
       return state

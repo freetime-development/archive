@@ -1,11 +1,20 @@
 import uid from 'uid'
-import { CreateNodeAction, SaveNodeAction, DiscardNodeAction, createNode } from './nodeActions'
 import { Node } from '../interface'
+import {
+  createNode,
+  CreateNodeAction,
+  SaveNodeActionError,
+  DiscardNodeAction,
+  AnnotateNodeAction,
+  SaveNodeActionSuccess
+} from './nodeActions'
 
 export type CombinedActions =
-  CreateNodeAction &
-  SaveNodeAction &
-  DiscardNodeAction
+  CreateNodeAction |
+  SaveNodeActionSuccess |
+  SaveNodeActionError |
+  DiscardNodeAction |
+  AnnotateNodeAction
 
 export const initPopup = (url: URL, data, tab) => (dispatch, getState) => {
   const existingNode = getState().nodes.find((node) => node.nodeData.origin === url.origin)
@@ -15,9 +24,9 @@ export const initPopup = (url: URL, data, tab) => (dispatch, getState) => {
       id: uid(),
       saved: false,
       error: false,
-      favIconUrl: tab.favIconUrl,
       nodeData: {
         ...data.nodeData,
+        favIconUrl: tab.favIconUrl,
         title: tab.title,
         origin: url.origin,
         url

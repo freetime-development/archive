@@ -6,11 +6,12 @@ interface Props {
   data: INode
   onSave(node: INode)
   onDiscard(nodeId: string)
+  onAnnotate(nodeId: string, data: string)
 }
 
 class Node extends PureComponent<Props> {
   render () {
-    let { embed, nodeData, favIconUrl } = this.props.data
+    let { embed, nodeData, saved, error } = this.props.data
     embed = embed ? React.createElement(embed.type, embed.props) : null
     return (
       <div className="content-node">
@@ -22,19 +23,38 @@ class Node extends PureComponent<Props> {
             <h3>{nodeData.title}</h3>
           </div>
           <div className="source">
-            <img src={favIconUrl} />
+            <img src={nodeData.favIconUrl} />
             {nodeData.url}
           </div>
           <div className="description-container">
-            <textarea autoFocus placeholder="Something you would like to add?" rows={4}></textarea>
+            <textarea
+              autoFocus
+              placeholder="Something you would like to add?"
+              rows={4}
+              onChange={(e) => this.onAnnotate(e.target.value)}
+              value={this.props.data.nodeData.annotation}
+            ></textarea>
           </div>
-          <div className="btn-group">
-            <button className="btn btn-save" onClick={() => this.props.onSave(this.props.data)}>Save</button>
-            <button className="btn btn-discard" onClick={() => this.props.onDiscard(this.props.data.id)}>Discard</button>
-          </div>
+          {!saved ?
+            <div className="btn-group">
+              <button className="btn btn-save" onClick={() => this.props.onSave(this.props.data)}>Save</button>
+              <button className="btn btn-discard" onClick={() => this.props.onDiscard(this.props.data.id)}>Discard</button>
+            </div>
+            :
+            <div className="node-saved">
+              Successfully saved
+            </div>
+          }
+          {error &&
+            <div className="error">Error</div>
+          }
         </div>
       </div>
     )
+  }
+
+  onAnnotate = (value: string) => {
+    this.props.onAnnotate(this.props.data.id, value)
   }
 }
 

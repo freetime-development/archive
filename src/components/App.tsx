@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import { RootState } from '../reducers/rootReducer'
 import Node from './Node/Node'
-import { saveNode, discardNode } from '../actions/nodeActions'
+import { saveNode, discardNode, annotateNode } from '../actions/nodeActions'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps
 
@@ -14,7 +14,13 @@ class App extends React.Component<Props> {
         <button className="btn btn-close icon icon-cross" onClick={this.closeExtension}></button>
         <div className="nodes">
           {this.props.nodes.map((node) =>
-            <Node key={node.id} data={node} onSave={this.props.saveNode} onDiscard={this.props.discardNode} />
+            <Node
+              key={node.id}
+              data={node}
+              onSave={this.props.saveNode}
+              onDiscard={this.props.discardNode}
+              onAnnotate={this.props.annotateNode}
+            />
           )}
         </div>
       </>
@@ -36,7 +42,8 @@ const mapStateToProps = (
 
 const mapDispatchToProps = {
   saveNode,
-  discardNode
+  discardNode,
+  annotateNode
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
