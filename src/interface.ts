@@ -8,12 +8,13 @@ export interface Node {
 
 export interface NodeData {
   title: string
-  url: string
+  topic: string
+  url: string | URL
   origin: string
   favIconUrl: string
-  videoId?: string
-  postId?: string
-  text?: string
+  contentId: string
+  annotation: string
+  refs: string[]
   embedUrl?: string
-  annotation?: string
+  text?: string
 }

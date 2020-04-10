@@ -1,6 +1,10 @@
 import axios from 'axios'
 import { Node } from '../interface'
 import { domain, saveData } from '../conf'
+import { ThunkAction } from 'redux-thunk'
+import { RootState } from '../reducers/rootReducer'
+import uid from 'uid'
+import { Action } from 'redux'
 
 const request = axios.create({
   baseURL: domain
@@ -12,27 +16,55 @@ export enum NodeTypeKeys {
   SAVE_NODE_SUCCESS = 'SAVE_NODE_SUCCESS',
   SAVE_NODE_ERROR = 'SAVE_NODE_ERROR',
   DISCARD_NODE = 'DISCARD_NODE',
-  ANNOTATE_NODE = 'ANNOTATE_NODE'
+  ANNOTATE_NODE = 'ANNOTATE_NODE',
+  ASSIGN_TOPIC = 'ASSIGN_TOPIC',
 }
+
+export type CombinedActions =
+  CreateNodeAction |
+  SaveNodeActionSuccess |
+  SaveNodeActionError |
+  DiscardNodeAction |
+  AnnotateNodeAction |
+  AssignTopicAction
 
 export interface CreateNodeAction {
   type: NodeTypeKeys.CREATE_NODE
   payload: Node
 }
 
-export const createNode = (node: Node): CreateNodeAction => ({
-  type: NodeTypeKeys.CREATE_NODE,
-  payload: node
-})
+export const createNode = (url, data: Node, tab): CreateNodeAction => {
+  const node: Node = {
+    ...data,
+    id: uid(),
+    saved: false,
+    error: false,
+    nodeData: {
+      ...data.nodeData,
+      topic: '',
+      annotation: '',
+      favIconUrl: tab.favIconUrl,
+      title: tab.title,
+      origin: url.origin,
+      refs: [],
+      url
+    }
+  }
+  return {
+    type: NodeTypeKeys.CREATE_NODE,
+    payload: node
+  }
+}
 
 /**********************************************/
 
+type SaveNodeThunkAction = ThunkAction<void, RootState, any, Action<any>>
 export interface SaveNodeAction {
   type: NodeTypeKeys.SAVE_NODE
   payload: Node
 }
 
-export const saveNode = (node: Node) => (dispatch) => {
+export const saveNode = (node: Node): SaveNodeThunkAction => (dispatch) => {
   request.post(`${saveData}`, node.nodeData).then((response) => {
     if (response.status === 200) {
       dispatch(saveNodeSuccess(node.id))
@@ -90,5 +122,22 @@ export interface AnnotateNodeAction {
 
 export const annotateNode = (nodeId: string, data: string): AnnotateNodeAction => ({
   type: NodeTypeKeys.ANNOTATE_NODE,
+  payload: { nodeId, data }
+})
+
+/**********************************************/
+
+interface AssignTopicPayload {
+  nodeId: string
+  data: string
+}
+
+export interface AssignTopicAction {
+  type: NodeTypeKeys.ASSIGN_TOPIC
+  payload: AssignTopicPayload
+}
+
+export const assignTopic = (nodeId: string, data: string): AssignTopicAction => ({
+  type: NodeTypeKeys.ASSIGN_TOPIC,
   payload: { nodeId, data }
 })

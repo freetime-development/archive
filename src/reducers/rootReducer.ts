@@ -1,5 +1,4 @@
-import { CombinedActions } from '../actions/actions'
-import { NodeTypeKeys } from '../actions/nodeActions'
+import { NodeTypeKeys, CombinedActions } from '../actions/nodeActions'
 import { Node } from '../interface'
 
 export interface RootState {
@@ -63,6 +62,23 @@ export default function rootReducer (
               nodeData: {
                 ...node.nodeData,
                 annotation: action.payload.data
+              }
+            }
+          } else {
+            return node
+          }
+        })
+      }
+    case NodeTypeKeys.ASSIGN_TOPIC:
+      return {
+        ...state,
+        nodes: state.nodes.map((node) => {
+          if (node.id === action.payload.nodeId) {
+            return {
+              ...node,
+              nodeData: {
+                ...node.nodeData,
+                topic: action.payload.data
               }
             }
           } else {

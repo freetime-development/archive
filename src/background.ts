@@ -1,6 +1,7 @@
 import { initializeStore } from './store'
-import { initPopup } from './actions/actions'
+import { createNode } from './actions/nodeActions'
 import { providers, Providers } from './providers'
+import { Node } from './interface'
 
 /********************************
   Initialize persistent store
@@ -33,8 +34,11 @@ chrome.runtime.onInstalled.addListener(function () {
 function onClickContextMenu(info, tab) {
   const url = new URL(tab.url)
 
-  chrome.tabs.sendMessage(tab.id, { msg: 'open_extension', tab })
-  store.dispatch(initPopup(url, { nodeData: { text: info.selectionText } }, tab))
+  const textData = {
+    nodeData: { text: info.selectionText }
+  } as Node
+  chrome.tabs.sendMessage(tab.id, { msg: 'open_extension', tab, info })
+  store.dispatch(createNode(url, textData, tab) as any)
 }
 
 function onClickBrowserIcon(tab) {
@@ -43,36 +47,33 @@ function onClickBrowserIcon(tab) {
   const providerSpecificData = createNodeData(url)
   chrome.tabs.sendMessage(tab.id, { msg: 'open_extension', providerSpecificData: providerSpecificData || 'no_data' })
   if (providerSpecificData) {
-    store.dispatch(initPopup(url, providerSpecificData, tab))
+    store.dispatch(createNode(url, providerSpecificData, tab) as any)
   }
 }
 
-function createNodeData(url) {
-  const node = {
-    nodeData: {}
-  }
+function createNodeData(url: URL): Node {
   switch (url.origin) {
     case Providers.YT: {
+      const node = {
+        nodeData: {}
+      } as Node
       const videoId = url.searchParams.get('v')
-      if (store.getState().nodes.find((node) => node.nodeData.videoId === videoId)) {
-        return null
-      }
       const embedUrl = `${url.origin}/embed/${videoId}`
       const embedElement = providers.get(Providers.YT)(embedUrl)
 
-      node.nodeData.videoId = videoId
+      node.nodeData.contentId = videoId
       node.nodeData.embedUrl = embedUrl
       node.embed = embedElement
       return node
     }
     case Providers.IMGUR: {
+      const node = {
+        nodeData: {}
+      } as Node
       const postId = window.location.pathname.split('/')[2]
-      if (store.getState().nodes.find((node) => node.nodeData.postId === postId)) {
-        return null
-      }
       const embedElement = providers.get(Providers.IMGUR)(postId)
 
-      node.nodeData.postId = postId
+      node.nodeData.contentId = postId
       node.embed = embedElement
 
       return node

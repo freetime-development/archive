@@ -2,11 +2,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CheckerPlugin } = require('awesome-typescript-loader')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
+
 module.exports = {
   mode: 'development',
   entry: {
     archive: './src/index.tsx',
-    background: './src/background.js'
+    background: './src/background.ts'
   },
   devtool: 'cheap-module-source-map',
   output: {

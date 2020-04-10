@@ -58,3 +58,7 @@
 .content-node-right .description-container {
   width: 100%;
 }
+
+.content-node-right .topic input {
+  margin-left: 10px;
+}

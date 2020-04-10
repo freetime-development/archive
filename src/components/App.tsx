@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import { RootState } from '../reducers/rootReducer'
 import Node from './Node/Node'
-import { saveNode, discardNode, annotateNode } from '../actions/nodeActions'
+import { saveNode, discardNode, annotateNode, assignTopic } from '../actions/nodeActions'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps
 
@@ -20,6 +20,7 @@ class App extends React.Component<Props> {
               onSave={this.props.saveNode}
               onDiscard={this.props.discardNode}
               onAnnotate={this.props.annotateNode}
+              onTopic={this.props.assignTopic}
             />
           )}
         </div>
@@ -43,7 +44,8 @@ const mapStateToProps = (
 const mapDispatchToProps = {
   saveNode,
   discardNode,
-  annotateNode
+  annotateNode,
+  assignTopic
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

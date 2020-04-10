@@ -7,6 +7,7 @@ interface Props {
   onSave(node: INode)
   onDiscard(nodeId: string)
   onAnnotate(nodeId: string, data: string)
+  onTopic(nodeId: string, data: string)
 }
 
 class Node extends PureComponent<Props> {
@@ -26,6 +27,14 @@ class Node extends PureComponent<Props> {
             <img src={nodeData.favIconUrl} />
             {nodeData.url}
           </div>
+          <label className="topic">
+            Topic:
+            <input
+              type="text"
+              value={this.props.data.nodeData.topic}
+              onChange={(e) => this.onTopic(e.target.value)}
+            />
+          </label>
           <div className="description-container">
             <textarea
               autoFocus
@@ -55,6 +64,10 @@ class Node extends PureComponent<Props> {
 
   onAnnotate = (value: string) => {
     this.props.onAnnotate(this.props.data.id, value)
+  }
+
+  onTopic = (value: string) => {
+    this.props.onTopic(this.props.data.id, value)
   }
 }
 
