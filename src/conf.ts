@@ -1,4 +1,4 @@
-export const domain = 'http://localhost:3000'
+export const host = 'http://localhost:4000'
 
 // Routes
 export const saveData = '/node/set'

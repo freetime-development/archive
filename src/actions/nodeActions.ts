@@ -1,13 +1,13 @@
 import axios from 'axios'
 import { Node } from '../interface'
-import { domain, saveData } from '../conf'
+import { host, saveData } from '../conf'
 import { ThunkAction } from 'redux-thunk'
 import { RootState } from '../reducers/rootReducer'
 import uid from 'uid'
 import { Action } from 'redux'
 
 const request = axios.create({
-  baseURL: domain
+  baseURL: host
 })
 
 export enum NodeTypeKeys {
@@ -46,10 +46,12 @@ export const createNode = (url, data: Node, tab): CreateNodeAction => {
       favIconUrl: tab.favIconUrl,
       title: tab.title,
       origin: url.origin,
+      date: new Date().toISOString(),
       refs: [],
       url
     }
   }
+
   return {
     type: NodeTypeKeys.CREATE_NODE,
     payload: node

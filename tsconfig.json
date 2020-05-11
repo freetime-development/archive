@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "jsx": "react",
-        "allowJs": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "lib": ["es2015", "dom"]

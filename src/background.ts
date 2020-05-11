@@ -1,7 +1,7 @@
 import { initializeStore } from './store'
 import { createNode } from './actions/nodeActions'
-import { providers, Providers } from './providers'
-import { Node } from './interface'
+import { providers, origins } from './providers'
+import { Node, NodeType } from './interface'
 
 /********************************
   Initialize persistent store
@@ -11,11 +11,13 @@ import { Node } from './interface'
 const store = initializeStore()
 
 chrome.runtime.onInstalled.addListener(function () {
-  // For debugging
-  chrome.runtime.onMessage.addListener(function (request) {
-    console.log(request)
+  chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.command === 'init') {
+      const url = new URL(request.tab.url)
+      chrome.tabs.sendMessage(request.tab.id, { command: 'open_extension' })
+      store.dispatch(createNode(url, request.node, request.tab))
+    }
   })
-
   // Creating item in context menu {mouse_click_right | event.button === 2}
   chrome.contextMenus.create({
     id: 'id',
@@ -35,50 +37,15 @@ function onClickContextMenu(info, tab) {
   const url = new URL(tab.url)
 
   const textData = {
-    nodeData: { text: info.selectionText }
+    nodeData: { text: info.selectionText, type: NodeType.Text }
   } as Node
-  chrome.tabs.sendMessage(tab.id, { msg: 'open_extension', tab, info })
+  chrome.tabs.sendMessage(tab.id, { command: 'open_extension' })
   store.dispatch(createNode(url, textData, tab) as any)
 }
 
 function onClickBrowserIcon(tab) {
   const url = new URL(tab.url)
+  const match = origins.find((o) => String(url.origin).includes(o.value))
 
-  const providerSpecificData = createNodeData(url)
-  chrome.tabs.sendMessage(tab.id, { msg: 'open_extension', providerSpecificData: providerSpecificData || 'no_data' })
-  if (providerSpecificData) {
-    store.dispatch(createNode(url, providerSpecificData, tab) as any)
-  }
-}
-
-function createNodeData(url: URL): Node {
-  switch (url.origin) {
-    case Providers.YT: {
-      const node = {
-        nodeData: {}
-      } as Node
-      const videoId = url.searchParams.get('v')
-      const embedUrl = `${url.origin}/embed/${videoId}`
-      const embedElement = providers.get(Providers.YT)(embedUrl)
-
-      node.nodeData.contentId = videoId
-      node.nodeData.embedUrl = embedUrl
-      node.embed = embedElement
-      return node
-    }
-    case Providers.IMGUR: {
-      const node = {
-        nodeData: {}
-      } as Node
-      const postId = window.location.pathname.split('/')[2]
-      const embedElement = providers.get(Providers.IMGUR)(postId)
-
-      node.nodeData.contentId = postId
-      node.embed = embedElement
-
-      return node
-    }
-    default:
-      return null
-  }
+  providers.get(match.label)(url, tab)
 }

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Node as INode } from '../../interface'
+import { Node as INode, NodeType } from '../../interface'
 import './node.css'
 
 interface Props {
@@ -12,12 +12,13 @@ interface Props {
 
 class Node extends PureComponent<Props> {
   render () {
-    let { embed, nodeData, saved, error } = this.props.data
-    embed = embed ? React.createElement(embed.type, embed.props) : null
+    const { nodeData, saved, error } = this.props.data
+    const thumbnail = `https://img.youtube.com/vi/${nodeData.contentId}/mqdefault.jpg`
     return (
       <div className="content-node">
         <div className="content-node-left">
-          {embed || nodeData.text}
+          {nodeData.type === NodeType.Video && <img src={thumbnail}></img>}
+          {nodeData.type === NodeType.Text && nodeData.text }
         </div>
         <div className="content-node-right">
           <div className="title">

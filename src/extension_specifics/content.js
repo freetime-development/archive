@@ -1,8 +1,8 @@
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  console.log(request, sender, sendResponse)
   const extension = document.querySelector(`#${chrome.runtime.id}`)
-  if (request.msg === 'open_extension') {
+  if (request.command === 'open_extension') {
     if (!extension) {
-      console.log(request, sender, sendResponse)
       const iframe = document.createElement('iframe')
       iframe.id = chrome.runtime.id
       iframe.src = `chrome-extension://${chrome.runtime.id}/archive.html`
@@ -20,7 +20,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       extension.style.display = 'block'
     }
   }
-  if (request.msg === 'close_extension') {
+
+  if (request.command === 'close_extension') {
     extension.style.display = 'none'
+  }
+
+  if (request.command === 'wiki_begin') {
+    const img = document.querySelector('.infobox img')
+    const imgSrc = img.getAttribute('src')
+
+    chrome.runtime.sendMessage({ command: 'init', node: { imgSrc }, tab: request.tab })
+  }
+
+  if (request.command === 'yt_begin') {
+    chrome.runtime.sendMessage({ command: 'init', node: request.node, tab: request.tab })
   }
 })

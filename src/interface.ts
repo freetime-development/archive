@@ -1,3 +1,8 @@
+export enum NodeType {
+  Video = 'Video',
+  Text = 'Text'
+}
+
 export interface Node {
   id: string
   saved: boolean
@@ -15,6 +20,8 @@ export interface NodeData {
   contentId: string
   annotation: string
   refs: string[]
+  date: string
+  type: NodeType
   embedUrl?: string
   text?: string
 }

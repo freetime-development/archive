@@ -1,48 +1,53 @@
+import { Node, NodeType } from './interface'
+
 export const providers = new Map()
 
 export enum Providers {
-  YT = 'https://www.youtube.com',
-  IMGUR = 'https://imgur.com'
+  YT = 'YT',
+  WIKI = 'WIKI'
 }
 
-providers.set(Providers.YT, function getYoutubeIFrame(embedUrl) {
-  return {
-    type: 'iframe',
-    props: {
-      width: 360,
-      height: 200,
-      src: embedUrl,
-      frameBorder: 0,
-      allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
-      allowFullScreen: false
-    }
+export const origins = [
+  {
+    label: Providers.YT,
+    regexp: /https:\/\/www\.youtube\.com/g,
+    value: 'youtube.com'
+  },
+  {
+    label: Providers.WIKI,
+    regexp: /https:\/\/[a-z]{2}\.wikipedia\.org/g,
+    value: 'wikipedia.org'
   }
-})
+]
 
-providers.set(Providers.IMGUR, function getImgurEmbed(postId) {
-  const html = `
-    <blockquote class="imgur-embed-pub" lang="en" data-id="a/${postId}">
-      <a href="//imgur.com/a/${postId}">n-ice</a>
-    </blockquote>
-    <script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
-  `
+providers.set(Providers.YT, createYoutubeNode)
+providers.set(Providers.WIKI, createWikiNode)
 
-  // return {
-  //   type: 'div',
+function createYoutubeNode(url: URL, tab) {
+  const node = {
+    nodeData: {}
+  } as Node
+  const videoId = url.searchParams.get('v')
+  const embedUrl = `${url.origin}/embed/${videoId}`
+
+  node.nodeData.contentId = videoId
+  node.nodeData.embedUrl = embedUrl
+  node.nodeData.type = NodeType.Video
+  // node.embed = {
+  //   type: 'iframe',
   //   props: {
-  //     dangerouslySetInnerHTML: { __html: html }
+  //     width: 360,
+  //     height: 200,
+  //     src: embedUrl,
+  //     frameBorder: 0,
+  //     allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
+  //     allowFullScreen: false
   //   }
   // }
 
-  return {
-    type: 'iframe',
-    props: {
-      width: 360,
-      height: 200,
-      src: 'https://imgur.com/gallery/Vc5tSI1',
-      frameBorder: 0,
-      allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
-      allowFullScreen: false
-    }
-  }
-})
+  chrome.tabs.sendMessage(tab.id, { command: 'yt_begin', node, tab })
+}
+
+function createWikiNode(url: URL, tab) {
+  chrome.tabs.sendMessage(tab.id, { command: 'wiki_begin', tab })
+}
