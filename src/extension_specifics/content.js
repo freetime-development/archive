@@ -27,9 +27,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
   if (request.command === 'wiki_begin') {
     const img = document.querySelector('.infobox img')
-    const imgSrc = img.getAttribute('src')
+    const imgSrc = img.src
+    const node = {
+      ...request.node,
+      nodeData: { imgSrc }
+    }
 
-    chrome.runtime.sendMessage({ command: 'init', node: { imgSrc }, tab: request.tab })
+    chrome.runtime.sendMessage({ command: 'init', node, tab: request.tab })
   }
 
   if (request.command === 'yt_begin') {

@@ -1,6 +1,7 @@
 export enum NodeType {
-  Video = 'Video',
-  Text = 'Text'
+  YOUTUBE,
+  WIKIPEDIA,
+  TEXT
 }
 
 export interface Node {
@@ -8,10 +9,14 @@ export interface Node {
   saved: boolean
   error: boolean
   nodeData: NodeData
+  type: NodeType
   embed?: any
 }
 
-export interface NodeData {
+type NodeData = Wikipedia & Youtube & Text
+
+export interface Wikipedia {
+  date: string
   title: string
   topic: string
   url: string | URL
@@ -19,9 +24,25 @@ export interface NodeData {
   favIconUrl: string
   contentId: string
   annotation: string
-  refs: string[]
+  imgSrc: string
+}
+
+export interface Youtube {
   date: string
-  type: NodeType
-  embedUrl?: string
-  text?: string
+  title: string
+  topic: string
+  url: string | URL
+  origin: string
+  favIconUrl: string
+  contentId: string
+  annotation: string
+}
+
+export interface Text {
+  date: string
+  text: string
+  origin: string
+  favIconUrl: string
+  contentId: string
+  annotation: string
 }

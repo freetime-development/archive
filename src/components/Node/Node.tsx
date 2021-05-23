@@ -12,13 +12,14 @@ interface Props {
 
 class Node extends PureComponent<Props> {
   render () {
-    const { nodeData, saved, error } = this.props.data
+    const { nodeData, saved, error, type } = this.props.data
     const thumbnail = `https://img.youtube.com/vi/${nodeData.contentId}/mqdefault.jpg`
     return (
       <div className="content-node">
         <div className="content-node-left">
-          {nodeData.type === NodeType.Video && <img src={thumbnail}></img>}
-          {nodeData.type === NodeType.Text && nodeData.text }
+          {type === NodeType.YOUTUBE && <img src={thumbnail}></img>}
+          {type === NodeType.TEXT && nodeData.text }
+          {type === NodeType.WIKIPEDIA && <img src={nodeData.imgSrc}></img> }
         </div>
         <div className="content-node-right">
           <div className="title">

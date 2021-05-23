@@ -47,7 +47,6 @@ export const createNode = (url, data: Node, tab): CreateNodeAction => {
       title: tab.title,
       origin: url.origin,
       date: new Date().toISOString(),
-      refs: [],
       url
     }
   }

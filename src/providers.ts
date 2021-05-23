@@ -3,51 +3,43 @@ import { Node, NodeType } from './interface'
 export const providers = new Map()
 
 export enum Providers {
-  YT = 'YT',
-  WIKI = 'WIKI'
+  YOUTUBE = 'YOUTUBE',
+  WIKIPEDIA = 'WIKIPEDIA'
 }
 
 export const origins = [
   {
-    label: Providers.YT,
+    label: Providers.YOUTUBE,
     regexp: /https:\/\/www\.youtube\.com/g,
-    value: 'youtube.com'
+    value: 'youtube.'
   },
   {
-    label: Providers.WIKI,
+    label: Providers.WIKIPEDIA,
     regexp: /https:\/\/[a-z]{2}\.wikipedia\.org/g,
     value: 'wikipedia.org'
   }
 ]
 
-providers.set(Providers.YT, createYoutubeNode)
-providers.set(Providers.WIKI, createWikiNode)
+providers.set(Providers.YOUTUBE, createYoutubeNode)
+providers.set(Providers.WIKIPEDIA, createWikiNode)
 
 function createYoutubeNode(url: URL, tab) {
   const node = {
+    type: NodeType.YOUTUBE,
     nodeData: {}
   } as Node
   const videoId = url.searchParams.get('v')
   const embedUrl = `${url.origin}/embed/${videoId}`
 
   node.nodeData.contentId = videoId
-  node.nodeData.embedUrl = embedUrl
-  node.nodeData.type = NodeType.Video
-  // node.embed = {
-  //   type: 'iframe',
-  //   props: {
-  //     width: 360,
-  //     height: 200,
-  //     src: embedUrl,
-  //     frameBorder: 0,
-  //     allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
-  //     allowFullScreen: false
-  //   }
-  // }
 
   chrome.tabs.sendMessage(tab.id, { command: 'yt_begin', node, tab })
 }
 
 function createWikiNode(url: URL, tab) {
-  chrome.tabs.sendMessage(tab.id, { command: 'wiki_begin', tab })
+  const node = {
+    type: NodeType.WIKIPEDIA,
+    nodeData: {}
+  } as Node
+  chrome.tabs.sendMessage(tab.id, { command: 'wiki_begin', node, tab })
 }
